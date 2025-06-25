@@ -6,7 +6,8 @@ type WebAnalysisRequest struct {
 }
 
 type WebAnalysisResponse struct {
-	WebUrl    string `json:"webUrl"`
-	PageTitle string `json:"pageTitle"`
-	RequestId string `json:"requestId"`
+	WebUrl           string   `json:"webUrl"`
+	PageTitle        string   `json:"pageTitle"`
+	RequestId        string   `json:"requestId"`
+	ValidationErrors []string `json:"validationErrors"`
 }
