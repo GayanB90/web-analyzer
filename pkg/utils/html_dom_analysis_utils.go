@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -31,6 +30,5 @@ func ExtractHyperlinks(node *html.Node) []string {
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
 		ExtractHyperlinks(c)
 	}
-	log.Printf("Successfully extracted hyperlinks: %v", hyperlinks)
 	return hyperlinks
 }
