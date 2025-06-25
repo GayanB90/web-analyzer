@@ -9,13 +9,12 @@ import (
 	"golang.org/x/net/html"
 )
 
-func AnalyzeWebPage(request model.WebAnalysisRequest) model.WebAnalysisResponse {
+func AnalyzeWebPage(request model.WebAnalysisRequestModel) model.WebAnalysisResultModel {
 	var urlString = request.WebUrl
 
 	err := utils.ValidateURL(urlString)
 	if err != nil {
-		return model.WebAnalysisResponse{
-			RequestId:        request.RequestId,
+		return model.WebAnalysisResultModel{
 			ValidationErrors: []string{err.Error()},
 		}
 	}
@@ -30,9 +29,11 @@ func AnalyzeWebPage(request model.WebAnalysisRequest) model.WebAnalysisResponse 
 		log.Fatalf("An error occurred while parsing the HTML: %v\n", err)
 	}
 	htmlTitleText := utils.ExtractHtmlTitleText(doc)
-	return model.WebAnalysisResponse{
+	log.Printf("htmlTitleText: %v", htmlTitleText)
+	hyperlinks := utils.ExtractHyperlinks(doc)
+	return model.WebAnalysisResultModel{
 		WebUrl:    "",
 		PageTitle: htmlTitleText,
-		RequestId: "",
+		WebLinks:  hyperlinks,
 	}
 }
