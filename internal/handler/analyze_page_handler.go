@@ -9,19 +9,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AnalyzePageHandler(c *gin.Context) {
-	var webAnalysisRequest dto.WebAnalysisRequest
+func GetAnalyzePageHandler(pageAnalysisService service.WebPageAnalysisService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var webAnalysisRequest dto.WebAnalysisRequest
 
-	if err := c.BindJSON(&webAnalysisRequest); err != nil {
-		return
+		if err := c.BindJSON(&webAnalysisRequest); err != nil {
+			return
+		}
+		log.Printf("Binding web analysisRequest successful: %v", webAnalysisRequest)
+
+		webAnalysisRequestModel := dto.ToWebAnalysisRequestModel(webAnalysisRequest)
+		log.Printf("Initiating web page analysis for the request model %v", webAnalysisRequestModel)
+		webAnalysisResultModel := pageAnalysisService.AnalyzeWebPage(webAnalysisRequestModel)
+		log.Printf("Successfully analyzed the page for the request model %v, result: %v", webAnalysisRequestModel, webAnalysisResultModel)
+		webAnalysisResponse := dto.ToWebAnalysisResponseDto(webAnalysisResultModel)
+		log.Printf("Web Analysis Response: %v", webAnalysisResponse)
+		c.IndentedJSON(http.StatusOK, webAnalysisResponse)
 	}
-	log.Printf("Binding web analysisRequest successful: %v", webAnalysisRequest)
-
-	webAnalysisRequestModel := dto.ToWebAnalysisRequestModel(webAnalysisRequest)
-	log.Printf("Initiating web page analysis for the request model %v", webAnalysisRequestModel)
-	webAnalysisResultModel := service.AnalyzeWebPage(webAnalysisRequestModel)
-	log.Printf("Successfully analyzed the page for the request model %v, result: %v", webAnalysisRequestModel, webAnalysisResultModel)
-	webAnalysisResponse := dto.ToWebAnalysisResponseDto(webAnalysisResultModel)
-	log.Printf("Web Analysis Response: %v", webAnalysisResponse)
-	c.IndentedJSON(http.StatusOK, webAnalysisResponse)
 }
