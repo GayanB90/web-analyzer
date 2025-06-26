@@ -9,7 +9,9 @@ import (
 	"golang.org/x/net/html"
 )
 
-func AnalyzeWebPage(request model.WebAnalysisRequestModel) model.WebAnalysisResultModel {
+type DefaultWebPageAnalysisService struct{}
+
+func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysisRequestModel) model.WebAnalysisResultModel {
 	var urlString = request.WebUrl
 
 	err := utils.ValidateURL(urlString)
