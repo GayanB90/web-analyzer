@@ -50,6 +50,7 @@ func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []s
 	var brokenLinks []string
 
 	for _, link := range links {
+		log.Printf("Validating hyperlink: %v", link)
 		for _, urlValidationService := range s.UrlValidationServices {
 			if urlValidationService.ValidateUrl(link) != nil {
 				brokenLinks = append(brokenLinks, link)
