@@ -9,7 +9,9 @@ import (
 	"golang.org/x/net/html"
 )
 
-type DefaultWebPageAnalysisService struct{}
+type DefaultWebPageAnalysisService struct {
+	UrlValidationServices []UrlValidationService
+}
 
 func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysisRequestModel) model.WebAnalysisResultModel {
 	var urlString = request.WebUrl
@@ -33,9 +35,26 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	htmlTitleText := utils.ExtractHtmlTitleText(doc)
 	log.Printf("htmlTitleText: %v", htmlTitleText)
 	hyperlinks := utils.ExtractHyperlinks(doc)
+	log.Printf("hyperlinks: %v", hyperlinks)
+	brokenLinks := s.findBrokenHyperlinks(hyperlinks)
+	log.Printf("brokenLinks: %v", brokenLinks)
 	return model.WebAnalysisResultModel{
-		WebUrl:    "",
-		PageTitle: htmlTitleText,
-		WebLinks:  hyperlinks,
+		WebUrl:         "",
+		PageTitle:      htmlTitleText,
+		WebLinks:       hyperlinks,
+		BrokenWebLinks: brokenLinks,
 	}
+}
+
+func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []string {
+	var brokenLinks []string
+
+	for _, link := range links {
+		for _, urlValidationService := range s.UrlValidationServices {
+			if urlValidationService.ValidateUrl(link) != nil {
+				brokenLinks = append(brokenLinks, link)
+			}
+		}
+	}
+	return brokenLinks
 }
