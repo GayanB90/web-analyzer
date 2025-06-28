@@ -38,11 +38,14 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	log.Printf("hyperlinks: %v", hyperlinks)
 	brokenLinks := s.findBrokenHyperlinks(hyperlinks)
 	log.Printf("brokenLinks: %v", brokenLinks)
+	loginFormAvailable := utils.IsLoginFormAvailable(doc)
+	log.Printf("loginFormAvailable: %v", loginFormAvailable)
 	return model.WebAnalysisResultModel{
-		WebUrl:         "",
+		WebUrl:         urlString,
 		PageTitle:      htmlTitleText,
 		WebLinks:       hyperlinks,
 		BrokenWebLinks: brokenLinks,
+		LoginForm:      loginFormAvailable,
 	}
 }
 
