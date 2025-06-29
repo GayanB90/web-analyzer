@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -59,10 +58,9 @@ func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {
 		} else {
 			headingCountMap[level] = 1
 		}
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			ExtractHeadingCount(c, headingCountMap)
-		}
-		fmt.Printf("Heading level: %s, Count: %s\n", level, headingCountMap[level])
+	}
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		ExtractHeadingCount(c, headingCountMap)
 	}
 }
 

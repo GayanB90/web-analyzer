@@ -25,6 +25,7 @@ func ToWebAnalysisResponseDto(resultModel model.WebAnalysisResultModel) WebAnaly
 		HeadersCount:     resultModel.HeadersCount,
 		RequestId:        resultModel.RequestId,
 		Hyperlinks:       resultModel.WebLinks,
+		IsLoginPage:      resultModel.LoginForm,
 		ValidationErrors: resultModel.ValidationErrors,
 	}
 }
