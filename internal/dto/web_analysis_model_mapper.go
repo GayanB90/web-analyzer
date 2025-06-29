@@ -6,22 +6,28 @@ import (
 
 func ToWebAnalysisRequestModel(requestDto WebAnalysisRequest) model.WebAnalysisRequestModel {
 	return model.WebAnalysisRequestModel{
-		WebUrl: requestDto.WebUrl,
+		RequestId: requestDto.RequestId,
+		WebUrl:    requestDto.WebUrl,
 	}
 }
 
 func ToWebAnalysisRequestDto(requestModel model.WebAnalysisRequestModel) WebAnalysisRequest {
 	return WebAnalysisRequest{
-		WebUrl: requestModel.WebUrl,
+		RequestId: requestModel.RequestId,
+		WebUrl:    requestModel.WebUrl,
 	}
 }
 
 func ToWebAnalysisResponseDto(resultModel model.WebAnalysisResultModel) WebAnalysisResponse {
 	return WebAnalysisResponse{
+		RequestId:        resultModel.RequestId,
 		WebUrl:           resultModel.WebUrl,
+		HtmlVersion:      resultModel.HtmlVersion,
 		PageTitle:        resultModel.PageTitle,
-		RequestId:        "",
+		HeadersCount:     resultModel.HeadersCount,
 		Hyperlinks:       resultModel.WebLinks,
+		IsLoginPage:      resultModel.LoginForm,
+		BrokenLinks:      resultModel.BrokenWebLinks,
 		ValidationErrors: resultModel.ValidationErrors,
 	}
 }

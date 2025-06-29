@@ -6,9 +6,13 @@ type WebAnalysisRequest struct {
 }
 
 type WebAnalysisResponse struct {
-	WebUrl           string   `json:"webUrl"`
-	PageTitle        string   `json:"pageTitle"`
-	RequestId        string   `json:"requestId"`
-	Hyperlinks       []string `json:"hyperlinks"`
-	ValidationErrors []string `json:"validationErrors"`
+	WebUrl           string         `json:"webUrl"`
+	HtmlVersion      string         `json:"htmlVersion"`
+	PageTitle        string         `json:"pageTitle"`
+	HeadersCount     map[string]int `json:"headersCount"`
+	RequestId        string         `json:"requestId"`
+	Hyperlinks       []string       `json:"hyperlinks"`
+	BrokenLinks      []string       `json:"brokenLinks"`
+	IsLoginPage      bool           `json:"isLoginPage"`
+	ValidationErrors []string       `json:"validationErrors"`
 }
