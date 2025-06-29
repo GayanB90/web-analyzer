@@ -11,7 +11,10 @@ import (
 func main() {
 	router := gin.Default()
 
+	lexicalUrlValidationService := &service.LexicalUrlValidationService{}
+	httpUrlValidationService := &service.HttpUrlValidationService{}
 	analysisService := &service.DefaultWebPageAnalysisService{}
+	analysisService.UrlValidationServices = []service.UrlValidationService{lexicalUrlValidationService, httpUrlValidationService}
 
 	router.Static("/static", "../../static")
 

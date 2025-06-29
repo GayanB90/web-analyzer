@@ -12,6 +12,7 @@ type WebAnalysisResponse struct {
 	HeadersCount     map[string]int `json:"headersCount"`
 	RequestId        string         `json:"requestId"`
 	Hyperlinks       []string       `json:"hyperlinks"`
+	BrokenLinks      []string       `json:"brokenLinks"`
 	IsLoginPage      bool           `json:"isLoginPage"`
 	ValidationErrors []string       `json:"validationErrors"`
 }

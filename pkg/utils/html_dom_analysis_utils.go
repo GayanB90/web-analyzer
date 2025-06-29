@@ -33,19 +33,17 @@ func ExtractHtmlTitleText(node *html.Node) string {
 	return ""
 }
 
-func ExtractHyperlinks(node *html.Node) []string {
-	var hyperlinks = make([]string, 0)
+func ExtractHyperlinks(node *html.Node, hyperlinks *[]string) {
 	if node.Type == html.ElementNode && node.Data == "a" {
 		for _, attr := range node.Attr {
 			if attr.Key == "href" {
-				hyperlinks = append(hyperlinks, attr.Val)
+				*hyperlinks = append(*hyperlinks, attr.Val)
 			}
 		}
 	}
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		ExtractHyperlinks(c)
+		ExtractHyperlinks(c, hyperlinks)
 	}
-	return hyperlinks
 }
 
 func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {

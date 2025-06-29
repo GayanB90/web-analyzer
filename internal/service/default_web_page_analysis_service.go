@@ -47,9 +47,10 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	headingCountMap := make(map[string]int)
 	utils.ExtractHeadingCount(doc, headingCountMap)
 	log.Printf("headingCountMap: %v", headingCountMap)
-	hyperlinks := utils.ExtractHyperlinks(doc)
-	log.Printf("hyperlinks: %v", hyperlinks)
-	brokenLinks := s.findBrokenHyperlinks(hyperlinks)
+	hyperlinksList := make([]string, 0)
+	utils.ExtractHyperlinks(doc, &hyperlinksList)
+	log.Printf("hyperlinks: %v", hyperlinksList)
+	brokenLinks := s.findBrokenHyperlinks(hyperlinksList)
 	log.Printf("brokenLinks: %v", brokenLinks)
 	loginFormAvailable := utils.IsLoginFormAvailable(doc)
 	log.Printf("loginFormAvailable: %v", loginFormAvailable)
@@ -57,14 +58,14 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		WebUrl:         urlString,
 		PageTitle:      htmlTitleText,
 		HeadersCount:   headingCountMap,
-		WebLinks:       hyperlinks,
+		WebLinks:       hyperlinksList,
 		BrokenWebLinks: brokenLinks,
 		LoginForm:      loginFormAvailable,
 	}
 }
 
 func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []string {
-	var brokenLinks []string
+	var brokenLinks = make([]string, 0)
 
 	for _, link := range links {
 		log.Printf("Validating hyperlink: %v", link)

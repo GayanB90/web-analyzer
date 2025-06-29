@@ -26,6 +26,7 @@ func ToWebAnalysisResponseDto(resultModel model.WebAnalysisResultModel) WebAnaly
 		RequestId:        resultModel.RequestId,
 		Hyperlinks:       resultModel.WebLinks,
 		IsLoginPage:      resultModel.LoginForm,
+		BrokenLinks:      resultModel.BrokenWebLinks,
 		ValidationErrors: resultModel.ValidationErrors,
 	}
 }
