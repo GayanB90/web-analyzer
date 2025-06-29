@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -34,19 +33,17 @@ func ExtractHtmlTitleText(node *html.Node) string {
 	return ""
 }
 
-func ExtractHyperlinks(node *html.Node) []string {
-	var hyperlinks = make([]string, 0)
+func ExtractHyperlinks(node *html.Node, hyperlinks *[]string) {
 	if node.Type == html.ElementNode && node.Data == "a" {
 		for _, attr := range node.Attr {
 			if attr.Key == "href" {
-				hyperlinks = append(hyperlinks, attr.Val)
+				*hyperlinks = append(*hyperlinks, attr.Val)
 			}
 		}
 	}
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		ExtractHyperlinks(c)
+		ExtractHyperlinks(c, hyperlinks)
 	}
-	return hyperlinks
 }
 
 func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {
@@ -59,10 +56,9 @@ func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {
 		} else {
 			headingCountMap[level] = 1
 		}
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			ExtractHeadingCount(c, headingCountMap)
-		}
-		fmt.Printf("Heading level: %s, Count: %s\n", level, headingCountMap[level])
+	}
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		ExtractHeadingCount(c, headingCountMap)
 	}
 }
 
