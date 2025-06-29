@@ -15,7 +15,7 @@ function analyzeWebPage(event) {
     })
         .then(res => res.json())
         .then(data => {
-            document.getElementById('result-container').innerText = JSON.stringify(data);
+            document.getElementById('result-container').innerText = JSON.stringify(data, null, 2);
         })
         .catch(err => console.error('Error:', err));
 }

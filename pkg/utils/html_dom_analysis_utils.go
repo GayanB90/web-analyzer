@@ -16,7 +16,11 @@ func ExtractHtmlVersion(htmlStringReader io.Reader) string {
 			return "Error"
 		case html.DoctypeToken:
 			token := tokenizer.Token()
-			return token.Data
+			if token.Data == "html" {
+				return "HTML5"
+			} else {
+				return token.Data
+			}
 		}
 	}
 }
