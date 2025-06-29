@@ -12,7 +12,8 @@ func ToWebAnalysisRequestModel(requestDto WebAnalysisRequest) model.WebAnalysisR
 
 func ToWebAnalysisRequestDto(requestModel model.WebAnalysisRequestModel) WebAnalysisRequest {
 	return WebAnalysisRequest{
-		WebUrl: requestModel.WebUrl,
+		RequestId: requestModel.RequestId,
+		WebUrl:    requestModel.WebUrl,
 	}
 }
 
@@ -20,7 +21,8 @@ func ToWebAnalysisResponseDto(resultModel model.WebAnalysisResultModel) WebAnaly
 	return WebAnalysisResponse{
 		WebUrl:           resultModel.WebUrl,
 		PageTitle:        resultModel.PageTitle,
-		RequestId:        "",
+		HeadersCount:     resultModel.HeadersCount,
+		RequestId:        resultModel.RequestId,
 		Hyperlinks:       resultModel.WebLinks,
 		ValidationErrors: resultModel.ValidationErrors,
 	}

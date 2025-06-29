@@ -34,6 +34,9 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	}
 	htmlTitleText := utils.ExtractHtmlTitleText(doc)
 	log.Printf("htmlTitleText: %v", htmlTitleText)
+	headingCountMap := make(map[string]int)
+	utils.ExtractHeadingCount(doc, headingCountMap)
+	log.Printf("headingCountMap: %v", headingCountMap)
 	hyperlinks := utils.ExtractHyperlinks(doc)
 	log.Printf("hyperlinks: %v", hyperlinks)
 	brokenLinks := s.findBrokenHyperlinks(hyperlinks)
@@ -43,6 +46,7 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	return model.WebAnalysisResultModel{
 		WebUrl:         urlString,
 		PageTitle:      htmlTitleText,
+		HeadersCount:   headingCountMap,
 		WebLinks:       hyperlinks,
 		BrokenWebLinks: brokenLinks,
 		LoginForm:      loginFormAvailable,
