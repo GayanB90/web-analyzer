@@ -13,6 +13,8 @@ func main() {
 
 	analysisService := &service.DefaultWebPageAnalysisService{}
 
+	router.Static("/static", "../../static")
+
 	router.POST("/analyze", handler.GetAnalyzePageHandler(analysisService))
 	err := router.Run(":8080")
 	if err != nil {
