@@ -2,10 +2,25 @@ package utils
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"golang.org/x/net/html"
 )
+
+func ExtractHtmlVersion(htmlStringReader io.Reader) string {
+	tokenizer := html.NewTokenizer(htmlStringReader)
+	for {
+		tt := tokenizer.Next()
+		switch tt {
+		case html.ErrorToken:
+			return "Error"
+		case html.DoctypeToken:
+			token := tokenizer.Token()
+			return token.Data
+		}
+	}
+}
 
 func ExtractHtmlTitleText(node *html.Node) string {
 	if node.Type == html.ElementNode && node.Data == "title" && node.FirstChild != nil {

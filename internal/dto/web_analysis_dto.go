@@ -7,6 +7,7 @@ type WebAnalysisRequest struct {
 
 type WebAnalysisResponse struct {
 	WebUrl           string         `json:"webUrl"`
+	HtmlVersion      string         `json:"htmlVersion"`
 	PageTitle        string         `json:"pageTitle"`
 	HeadersCount     map[string]int `json:"headersCount"`
 	RequestId        string         `json:"requestId"`

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 
@@ -28,7 +30,15 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	}
 	defer resp.Body.Close()
 
-	doc, err := html.Parse(resp.Body)
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("An error occurred while buffering the resp body: %v\n", err)
+	}
+
+	htmlVersion := utils.ExtractHtmlVersion(bytes.NewReader(data))
+	log.Printf("htmlVersion: %v", htmlVersion)
+
+	doc, err := html.Parse(bytes.NewReader(data))
 	if err != nil {
 		log.Fatalf("An error occurred while parsing the HTML: %v\n", err)
 	}
