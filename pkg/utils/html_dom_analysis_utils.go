@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -31,6 +32,23 @@ func ExtractHyperlinks(node *html.Node) []string {
 		ExtractHyperlinks(c)
 	}
 	return hyperlinks
+}
+
+func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {
+	switch node.Data {
+	case "h1", "h2", "h3", "h4", "h5", "h6":
+		level := node.Data
+		levelCount, exists := headingCountMap[level]
+		if exists {
+			levelCount++
+		} else {
+			headingCountMap[level] = 1
+		}
+		for c := node.FirstChild; c != nil; c = c.NextSibling {
+			ExtractHeadingCount(c, headingCountMap)
+		}
+		fmt.Printf("Heading level: %s, Count: %s\n", level, headingCountMap[level])
+	}
 }
 
 func IsLoginFormAvailable(node *html.Node) bool {
