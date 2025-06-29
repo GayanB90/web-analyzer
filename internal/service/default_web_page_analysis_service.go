@@ -73,6 +73,7 @@ func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []s
 		for _, urlValidationService := range s.UrlValidationServices {
 			if urlValidationService.ValidateUrl(link) != nil {
 				brokenLinks = append(brokenLinks, link)
+				break
 			}
 		}
 	}
