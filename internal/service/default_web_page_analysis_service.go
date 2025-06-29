@@ -55,6 +55,7 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	loginFormAvailable := utils.IsLoginFormAvailable(doc)
 	log.Printf("loginFormAvailable: %v", loginFormAvailable)
 	return model.WebAnalysisResultModel{
+		RequestId:      request.RequestId,
 		WebUrl:         urlString,
 		PageTitle:      htmlTitleText,
 		HeadersCount:   headingCountMap,
