@@ -20,6 +20,7 @@ func ToWebAnalysisRequestDto(requestModel model.WebAnalysisRequestModel) WebAnal
 func ToWebAnalysisResponseDto(resultModel model.WebAnalysisResultModel) WebAnalysisResponse {
 	return WebAnalysisResponse{
 		WebUrl:           resultModel.WebUrl,
+		HtmlVersion:      resultModel.HtmlVersion,
 		PageTitle:        resultModel.PageTitle,
 		HeadersCount:     resultModel.HeadersCount,
 		RequestId:        resultModel.RequestId,
