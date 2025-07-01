@@ -16,24 +16,24 @@ type DefaultWebPageAnalysisService struct {
 	UrlValidationServices []UrlValidationService
 }
 
-func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysisRequestModel) model.WebAnalysisResultModel {
+func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysisRequestModel) (model.WebAnalysisResultModel, error) {
 	var urlString = request.WebUrl
 
 	err := utils.ValidateURL(urlString)
 	if err != nil {
 		return model.WebAnalysisResultModel{
 			ValidationErrors: []string{err.Error()},
-		}
+		}, err
 	}
 	resp, err := http.Get(urlString)
 	if err != nil {
-		log.Fatalf("An error occurred while fetching the URL: %v", err)
+		return model.WebAnalysisResultModel{}, err
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("An error occurred while buffering the resp body: %v\n", err)
+		return model.WebAnalysisResultModel{}, err
 	}
 
 	var waitGroup sync.WaitGroup
@@ -55,7 +55,7 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 
 	doc, err := html.Parse(bytes.NewReader(data))
 	if err != nil {
-		log.Fatalf("An error occurred while parsing the HTML: %v\n", err)
+		return model.WebAnalysisResultModel{}, err
 	}
 
 	waitGroup.Add(1)
@@ -120,7 +120,7 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		WebLinks:       hyperlinksList,
 		BrokenWebLinks: brokenLinks,
 		LoginForm:      loginFormAvailable,
-	}
+	}, nil
 }
 
 func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []string {
