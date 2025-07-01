@@ -11,13 +11,6 @@ func ToWebAnalysisRequestModel(requestDto WebAnalysisRequest) model.WebAnalysisR
 	}
 }
 
-func ToWebAnalysisRequestDto(requestModel model.WebAnalysisRequestModel) WebAnalysisRequest {
-	return WebAnalysisRequest{
-		RequestId: requestModel.RequestId,
-		WebUrl:    requestModel.WebUrl,
-	}
-}
-
 func ToWebAnalysisResponseDto(resultModel model.WebAnalysisResultModel) WebAnalysisResponse {
 	return WebAnalysisResponse{
 		RequestId:        resultModel.RequestId,

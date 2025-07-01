@@ -53,13 +53,7 @@ func ExtractHyperlinks(node *html.Node, hyperlinks *[]string) {
 func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {
 	switch node.Data {
 	case "h1", "h2", "h3", "h4", "h5", "h6":
-		level := node.Data
-		levelCount, exists := headingCountMap[level]
-		if exists {
-			levelCount++
-		} else {
-			headingCountMap[level] = 1
-		}
+		headingCountMap[node.Data]++
 	}
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
 		ExtractHeadingCount(c, headingCountMap)
@@ -67,14 +61,13 @@ func ExtractHeadingCount(node *html.Node, headingCountMap map[string]int) {
 }
 
 func IsLoginFormAvailable(node *html.Node) bool {
-	passwordCount, signupHint, loginHint := analyzeHtmlInputTags(node)
-	return passwordCount == 1 && signupHint == false && loginHint == true
+	passwordCount, signupHint := analyzeHtmlInputTags(node)
+	return passwordCount == 1 && !signupHint
 }
 
-func analyzeHtmlInputTags(node *html.Node) (int, bool, bool) {
+func analyzeHtmlInputTags(node *html.Node) (int, bool) {
 	passwordCount := 0
 	signupHint := false
-	loginHint := false
 	if node.Type == html.ElementNode && node.Data == "input" {
 		typ := getHtmlTagAttribute(node, "type")
 		name := getHtmlTagAttribute(node, "name")
@@ -89,14 +82,13 @@ func analyzeHtmlInputTags(node *html.Node) (int, bool, bool) {
 		if containsSignupHint(name, id, placeholder) {
 			signupHint = true
 		}
-		if containsLoginHint(name, id, placeholder) {
-			loginHint = true
-		}
 	}
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		analyzeHtmlInputTags(c)
+		passwordCount2, signupHint2 := analyzeHtmlInputTags(c)
+		passwordCount = passwordCount + passwordCount2
+		signupHint = signupHint && signupHint2
 	}
-	return passwordCount, signupHint, loginHint
+	return passwordCount, signupHint
 }
 
 func getHtmlTagAttribute(n *html.Node, key string) string {
@@ -112,16 +104,6 @@ func containsSignupHint(values ...string) bool {
 	for _, v := range values {
 		l := strings.ToLower(v)
 		if strings.Contains(l, "signup") || strings.Contains(l, "register") || strings.Contains(l, "create") {
-			return true
-		}
-	}
-	return false
-}
-
-func containsLoginHint(values ...string) bool {
-	for _, v := range values {
-		l := strings.ToLower(v)
-		if strings.Contains(l, "login") || strings.Contains(l, "signin") || strings.Contains(l, "log in") {
 			return true
 		}
 	}
