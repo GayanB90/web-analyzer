@@ -3,12 +3,12 @@ package service
 import (
 	"bytes"
 	"io"
-	"log"
 	"net/http"
 	"sync"
 
 	"github.com/GayanB90/go-web-analyzer/internal/model"
 	"github.com/GayanB90/go-web-analyzer/pkg/utils"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/html"
 )
 
@@ -49,7 +49,10 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	go func() {
 		defer waitGroup.Done()
 		htmlVersion := utils.ExtractHtmlVersion(bytes.NewReader(data))
-		log.Printf("htmlVersion: %v", htmlVersion)
+		logrus.WithFields(logrus.Fields{
+			"requestId":   request.RequestId,
+			"htmlVersion": htmlVersion,
+		}).Info("Identified html version")
 		htmlVersionCh <- htmlVersion
 	}()
 
@@ -62,7 +65,10 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	go func() {
 		defer waitGroup.Done()
 		htmlTitleText := utils.ExtractHtmlTitleText(doc)
-		log.Printf("htmlTitleText: %v", htmlTitleText)
+		logrus.WithFields(logrus.Fields{
+			"requestId": request.RequestId,
+			"htmlTitle": htmlTitleText,
+		}).Info("Identified html title")
 		pageTitleCh <- htmlTitleText
 	}()
 
@@ -71,7 +77,10 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		defer waitGroup.Done()
 		headingCountMap := make(map[string]int)
 		utils.ExtractHeadingCount(doc, headingCountMap)
-		log.Printf("headingCountMap: %v", headingCountMap)
+		logrus.WithFields(logrus.Fields{
+			"requestId": request.RequestId,
+			"headings":  headingCountMap,
+		}).Info("Identified headings counts")
 		headingCountCh <- headingCountMap
 	}()
 
@@ -80,7 +89,10 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		defer waitGroup.Done()
 		hyperlinksList := make([]string, 0)
 		utils.ExtractHyperlinks(doc, &hyperlinksList)
-		log.Printf("hyperlinks: %v", hyperlinksList)
+		logrus.WithFields(logrus.Fields{
+			"requestId":  request.RequestId,
+			"hyperlinks": hyperlinksList,
+		}).Info("Identified hyperlinks")
 		hyperlinksCh <- hyperlinksList
 	}()
 
@@ -89,7 +101,11 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		defer waitGroup.Done()
 		hyperlinksList := <-hyperlinksCh
 		brokenLinks := s.findBrokenHyperlinks(hyperlinksList)
-		log.Printf("brokenLinks: %v", brokenLinks)
+		logrus.WithFields(logrus.Fields{
+			"requestId":      request.RequestId,
+			"brokenLinks":    brokenLinks,
+			"hyperlinksList": hyperlinksList,
+		}).Info("Identified broken hyperlinks")
 		brokenLinksCh <- brokenLinks
 		hyperlinksCh <- hyperlinksList
 	}()
@@ -98,7 +114,10 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 	go func() {
 		defer waitGroup.Done()
 		loginFormAvailable := utils.IsLoginFormAvailable(doc)
-		log.Printf("loginFormAvailable: %v", loginFormAvailable)
+		logrus.WithFields(logrus.Fields{
+			"requestId":          request.RequestId,
+			"loginFormAvailable": loginFormAvailable,
+		}).Info("Identified login form availability")
 		loginFormCh <- loginFormAvailable
 	}()
 
@@ -127,7 +146,9 @@ func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []s
 	var brokenLinks = make([]string, 0)
 
 	for _, link := range links {
-		log.Printf("Validating hyperlink: %v", link)
+		logrus.WithFields(logrus.Fields{
+			"link": link,
+		}).Info("Validating link")
 		for _, urlValidationService := range s.UrlValidationServices {
 			if urlValidationService.ValidateUrl(link) != nil {
 				brokenLinks = append(brokenLinks, link)
