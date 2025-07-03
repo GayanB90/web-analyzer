@@ -25,13 +25,8 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 			ValidationErrors: []string{err.Error()},
 		}, err
 	}
-	resp, err := http.Get(urlString)
-	if err != nil {
-		return model.WebAnalysisResultModel{}, err
-	}
-	defer resp.Body.Close()
 
-	data, err := io.ReadAll(resp.Body)
+	data, err := fetchPage(urlString, request.RequestId)
 	if err != nil {
 		return model.WebAnalysisResultModel{}, err
 	}
@@ -56,7 +51,7 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		htmlVersionCh <- htmlVersion
 	}()
 
-	doc, err := html.Parse(bytes.NewReader(data))
+	doc, err := s.parseHTML(data)
 	if err != nil {
 		return model.WebAnalysisResultModel{}, err
 	}
@@ -140,6 +135,32 @@ func (s *DefaultWebPageAnalysisService) AnalyzeWebPage(request model.WebAnalysis
 		BrokenWebLinks: brokenLinks,
 		LoginForm:      loginFormAvailable,
 	}, nil
+}
+
+func fetchPage(urlString string, requestId string) ([]byte, error) {
+	logrus.Infof("Fetching page %s for request id %s", urlString, requestId)
+	resp, err := http.Get(urlString)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return io.ReadAll(resp.Body)
+}
+
+func (s *DefaultWebPageAnalysisService) parseHTML(data []byte) (*html.Node, error) {
+	return html.Parse(bytes.NewReader(data))
+}
+
+func runConcurrently(tasks ...func()) {
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(len(tasks))
+	for _, task := range tasks {
+		go func(t func()) {
+			defer waitGroup.Done()
+			t()
+		}(task)
+	}
+	waitGroup.Wait()
 }
 
 func (s *DefaultWebPageAnalysisService) findBrokenHyperlinks(links []string) []string {
