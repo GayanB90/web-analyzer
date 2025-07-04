@@ -17,6 +17,8 @@ function analyzeWebPage(event) {
         .then(data => {
             document.getElementById('detailsTable').innerHTML = renderDetailsTable(data);
             document.getElementById('headersCountTable').innerHTML = renderMapAsTable(data.headersCount);
+            document.getElementById('totalNoOfLinks').innerHTML = 'Total No Of Links : ' + data.hyperlinks.length;
+            document.getElementById('totalBrokenLinks').innerHTML = 'Total No Of Broken Links : ' + data.brokenLinks.length;
             document.getElementById('hyperlinksTable').innerHTML = renderListAsTable("Hyperlinks", data.hyperlinks);
             document.getElementById('brokenLinksTable').innerHTML = renderListAsTable("Broken Links", data.brokenLinks);
         })
